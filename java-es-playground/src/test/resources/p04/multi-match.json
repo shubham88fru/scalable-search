@@ -1,0 +1,10 @@
+{
+  "multi_match": {
+    "query": "sprink seasen",
+    "fields": ["title^3", "body"],
+    "operator": "and",
+    "fuzziness": 1,
+    "type": "best_fields",
+    "tie_breaker": 0.7
+  }
+}
