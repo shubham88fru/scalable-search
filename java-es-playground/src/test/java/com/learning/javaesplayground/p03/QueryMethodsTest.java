@@ -10,7 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
+import org.springframework.data.util.Streamable;
 
 import java.util.List;
 
@@ -67,6 +71,36 @@ public class QueryMethodsTest extends AbstractTest {
                 .findByPriceLessThan(80);
         searchHits.forEach(print());
         Assertions.assertEquals(5, searchHits.getTotalHits());
+    }
+
+
+    @Test
+    public void findByPriceBetween() {
+        SearchHits<Product> searchHits = productRepository
+                .findByPriceBetween(10, 120, Sort.by("price"));
+        searchHits.forEach(print());
+        Assertions.assertEquals(8, searchHits.getTotalHits());
+    }
+
+    @Test
+    public void findAllSortByQuantity() {
+        Iterable<Product> iterable = productRepository
+                .findAll(Sort.by("quantity"));
+        iterable.forEach(print());
+        Assertions.assertEquals(20, Streamable.of(iterable)
+                .toList().size());
+    }
+
+    @Test
+    public void findByCategoryWithPagination() {
+        //page number starts from 0
+        SearchPage<Product> searchPage = productRepository
+                .findByCategory("Electronics", PageRequest.of(1, 4));
+
+        searchPage.getSearchHits().forEach(print());
+        Assertions.assertEquals(1, searchPage.getNumber());
+        Assertions.assertEquals(3, searchPage.getTotalPages());
+        Assertions.assertEquals(12, searchPage.getTotalElements());
     }
 
 }
