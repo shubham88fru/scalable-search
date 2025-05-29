@@ -1,5 +1,6 @@
 package com.learning.javaesplayground.p05;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.learning.javaesplayground.AbstractTest;
 import com.learning.javaesplayground.p05.entity.Garment;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Criteria;
@@ -48,6 +50,36 @@ public class NativeAndCriteriaQueryTest extends AbstractTest {
 
         Criteria fuzzyMatchShort = Criteria.where("name").fuzzy("short");
         verify(fuzzyMatchShort, 1);
+    }
+
+
+    @Test
+    public void boolQuery() {
+
+        Query occasionCasual =  Query.of(b -> b.term(
+                TermQuery.of(tb -> tb.field("occasion").value("Casual"))
+        ));
+
+        Query colorBrown =  Query.of(b -> b.term(
+                TermQuery.of(tb -> tb.field("color").value("Brown"))
+        ));
+
+        Query priceBelow50 =  Query.of(b -> b.range(
+                RangeQuery.of(rb -> rb.number(
+                        NumberRangeQuery.of(nrb -> nrb.field("price").lte(50d))
+                ))
+        ));
+
+        Query query = Query.of(b -> b.bool(
+                BoolQuery.of(bb -> bb.filter(occasionCasual, priceBelow50).should(colorBrown))
+        ));
+
+        NativeQuery nativeQuery = NativeQuery.builder()
+                .withQuery(query)
+                .build();
+
+        SearchHits<Garment> hits = elasticsearchOperations.search(nativeQuery, Garment.class);
+        Assertions.assertEquals(4, hits.getTotalHits());
     }
 
     private void verify(Criteria criteria, int expectedResultsCount) {
