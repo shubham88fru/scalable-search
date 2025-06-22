@@ -24,7 +24,7 @@ public class Constants {
         public static final int PREFIX_LENGTH = 2;
     }
 
-    private static final class Business {
+    public static final class Business {
         public static final String NAME = "name";
         public static final String ADDRESS = "address";
         public static final String DESCRIPTION = "description";
