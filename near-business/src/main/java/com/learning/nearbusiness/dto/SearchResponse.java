@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SearchResponse {
     private List<Business> results;
-    private Pagination pagination;
     private List<Facet> facets;
+    private Pagination pagination;
     private long timeTaken;
 }
