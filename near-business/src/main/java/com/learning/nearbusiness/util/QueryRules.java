@@ -33,7 +33,7 @@ public class QueryRules {
     public static final QueryRule RATING_QUERY = QueryRule.of(
             srp -> Objects.nonNull(srp.getRating()),
             srp -> ElasticSearchUtil
-                    .buildRangeQuery(RATING, builder -> builder.gte(srp.getRating()))
+                    .buildRangeQuery(builder -> builder.field(RATING).gte(srp.getRating()))
     );
 
     public static final QueryRule DISTANCE_QUERY = QueryRule.of(

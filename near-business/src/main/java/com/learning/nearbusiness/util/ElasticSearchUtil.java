@@ -44,7 +44,7 @@ public class ElasticSearchUtil {
         return Query.of(builder -> builder.term(termQuery));
     }
 
-    public static Query buildRangeQuery(String field, UnaryOperator<NumberRangeQuery.Builder> function) {
+    public static Query buildRangeQuery(UnaryOperator<NumberRangeQuery.Builder> function) {
         NumberRangeQuery numberRangeQuery = NumberRangeQuery.of(
                 function::apply
         );
